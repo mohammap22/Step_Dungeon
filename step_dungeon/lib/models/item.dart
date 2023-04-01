@@ -1,17 +1,18 @@
-// models/item.dart
 enum ItemRarity { normal, rare, epic, legendary }
 
 class Item {
   int level;
   ItemRarity rarity;
-  int damageBonus = 1;
+  int damageBonus=1;
+  int speedBonus=1;
 
   Item({required this.level, required this.rarity}) {
-    damageBonus = _calculateDamageBonus();
-    damageBonus ??= 0;
+    var bonuses = _calculateBonuses();
+    damageBonus = bonuses[0];
+    speedBonus = bonuses[1];
   }
 
-  int _calculateDamageBonus() {
+  List<int> _calculateBonuses() {
     int baseDamage = level * 2;
     double rarityMultiplier;
 
@@ -30,6 +31,8 @@ class Item {
         break;
     }
 
-    return (baseDamage * rarityMultiplier).toInt();
+    int damageBonus = (baseDamage * rarityMultiplier).toInt();
+    int speedBonus = (rarityMultiplier * 10).toInt();
+    return [damageBonus, speedBonus];
   }
 }

@@ -4,12 +4,11 @@ import 'package:step_dungeon/models/item.dart';
 
 class Monster {
   int level;
-  int health = 10;
+  int health = 5;
   bool isSpecial;
 
   Monster({required this.level, required this.isSpecial}) {
     health = _calculateHealth();
-    health ??= 0;
   }
 
   int _calculateHealth() {

@@ -1,4 +1,3 @@
-// providers/game_state.dart
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:step_dungeon/models/hero.dart';
@@ -13,6 +12,7 @@ class GameState with ChangeNotifier {
   List<Item> inventory = [];
   Timer? _monsterTimer;
   bool isFighting = false;
+  double attackSpeedMultiplier = 1.0;
 
   GameState() {
     createNewMonster();
@@ -24,14 +24,17 @@ class GameState with ChangeNotifier {
   }
 
   void attackMonster() {
-    if (activeMonster != null) {
-      if (!isFighting) {
-        _startMonsterTimer();
-      }
-      activeMonster!.takeDamage(hero.damage);
-      if (activeMonster!.health <= 0) {
-        _handleMonsterDefeat();
-      }
+    if (activeMonster == null || activeMonster!.health <= 0) {
+      activeMonster = Monster(level: monsterLevel, isSpecial: isSpecial);
+    }
+    activeMonster!.health -= hero.damage;
+    if (activeMonster!.health <= 0) {
+      activeMonster = null;
+      int newMonsterLevel = monsterLevel;
+
+      newMonsterLevel++;
+
+      monsterLevel = newMonsterLevel;
     }
     notifyListeners();
   }
@@ -61,5 +64,9 @@ class GameState with ChangeNotifier {
   void _resetMonsterTimer() {
     isFighting = false;
     _monsterTimer?.cancel();
+  }
+
+  void setAttackSpeedMultiplier(double multiplier) {
+    attackSpeedMultiplier = multiplier;
   }
 }

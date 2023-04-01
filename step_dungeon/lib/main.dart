@@ -18,6 +18,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final gameState = context.watch<GameState>();
+
+    final heroDamage = gameState.hero.damage;
+    final heroAttackSpeed = gameState.hero.attackSpeed;
+    final heroDPS = (heroDamage * heroAttackSpeed).toStringAsFixed(1);
+
     return MaterialApp(
       title: 'Step Hero',
       home: Scaffold(
@@ -28,19 +34,21 @@ class MyApp extends StatelessWidget {
             children: [
               Text('Steps: ${context.watch<StepTracker>().steps}'),
               Text('XP: ${context.watch<StepTracker>().calculateXP()}'),
-              ElevatedButton(
-                onPressed: () => context.read<GameState>().attackMonster(),
+              Text('DPS: $heroDPS'),
+              TextButton(
+                onPressed: gameState.isFighting ? null : gameState.attackMonster,
                 child: Text('Attack Monster'),
               ),
-              Text('Monster Level: ${context.watch<GameState>().monsterLevel}'),
-              Text('Monster Health: ${context.watch<GameState>().activeMonster?.health ?? 0}'),
-              Text('Hero Level: ${context.watch<GameState>().hero.level}'),
-              Text('Hero Damage: ${context.watch<GameState>().hero.damage}'),
+              Text('Monster Level: ${gameState.monsterLevel}'),
+              Text('Monster Health: ${gameState.activeMonster?.health ?? 0}'),
+              Text('Hero Level: ${gameState.hero.level}'),
               Text('Inventory:'),
-              ...context
-                  .watch<GameState>()
-                  .inventory
-                  .map((item) => Text('Item Level: ${item.level}, Rarity: ${item.rarity}, Damage Bonus: ${item.damageBonus}'))
+              ...gameState.inventory
+                  .map(
+                    (item) => Text(
+                      'Item Level: ${item.level}, Rarity: ${item.rarity}, Damage Bonus: ${item.damageBonus}, Attack Speed: ${item.speedBonus.toStringAsFixed(1)}',
+                    ),
+                  )
                   .toList(),
             ],
           ),
